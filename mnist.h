@@ -9,22 +9,64 @@
 #include <vector>
 
 class Matrix {
-
-    public:
+public:
     typedef float real_t;
 
-    private:
+private:
     struct Data {
-        size_t refs = 0;
         size_t rows = 0;
-        site_t cols = 0;
-        std::vector<real_t> vals
+        size_t cols = 0;
+        std::vector<real_t> vals;
+    };
+    std::shared_ptr<Data> d;
+
+public:
+
+    // コンストラクタ
+    // mnist.cppにかかれる
+    Matrix();
+    Matrix(Matrix const &r);
+
+    // ここは何？
+    // = でコンストラクタできるようにしてる？
+    void operator = (Matrix const &r)
+    {
+        *d = *r.d;
     }
+
+    size_t size() const
+    {
+        return d->vals.size();
+    }
+
+    real_t *data()
+    {
+        return d->vals.data();
+    }
+
+    real_t const *data() const
+    {
+        return d->vals.data();
+    }
+
+    size_t rows() const
+    {
+        return d->rows;
+    }
+
+    size_t cols() const
+    {
+        return d->cols;
+    }
+
+    void make(size_t r, size_t c);
+    void make(size_t r, size_t c, std::initializer_list<real_t> const &list);
+    void make(size_t r, size_t c, real_t const *p);
 }
 
 namespace mnist {
-    class Dataset {
-        private:
+class Dataset {
+    private:
         struct Data {
             size_t count = 0;
             int rows = 0;
@@ -33,7 +75,7 @@ namespace mnist {
             std::vector<std::vector<uint8_t>> images;
         } data;
 
-        public:
+    public:
         // 中身はtest_mnist.cpp
         bool load(char const *labels_path, char const *images_path);
 
@@ -48,7 +90,7 @@ namespace mnist {
         bool image_to_matrix(int index, Matrix *out) const;
         void label_to_matrix(int index, Matrix *out) const;
         int label(int index) const;
-    };
+};
 }
 
 #endif // MNIST_H
