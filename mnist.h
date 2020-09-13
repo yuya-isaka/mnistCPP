@@ -62,7 +62,50 @@ public:
     void make(size_t r, size_t c);
     void make(size_t r, size_t c, std::initializer_list<real_t> const &list);
     void make(size_t r, size_t c, real_t const *p);
-}
+
+    real_t &at(size_t r, size_t c)
+    {
+        return d->vals[d->cols * r + c];
+    }
+
+    real_t at(size_t r, size_t c) const
+    {
+        return d->vals[d->cols * r + c];
+    }
+
+    static real_t sigmoid(real_t v)
+    {
+        return 1 / (1 + exp(-v));
+    }
+
+    // こういう宣言には、終わりにセミコロンいるんだな
+    Matrix transpose() const;
+    Matrix dot(Matrix const &othr) const;
+    Matrix add(Matrix const &othr) const;
+    Matrix sub(Matrix const &othr) const;
+    Matrix mul(Matrix const &othr) const;
+    Matrix mul(real_t t) const;
+    Matrix div(real_t t) const;
+    Matrix sum() const;
+    Matrix sigmoid() const;
+    Matrix sigmoid_grad() const;
+    Matrix softmax() const;
+
+    void add_rows(Matrix const &other);
+};
+
+class Layer {
+public:
+    Matrix weight;
+    Matrix bias;
+
+    // ここのinputとoutputはなんでそのまま渡していいんだろう？
+    void reset(int input, int output)
+    {
+        weight.make(input, output);
+        bias.make(1, output);
+    }
+};
 
 namespace mnist {
 class Dataset {
